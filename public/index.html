@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FME Super Agent — Acceptance Test App</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>FME Super Agent — Acceptance Test</h1>
+    <div id="health-bar">Checking health…</div>
+  </header>
+
+  <nav>
+    <button onclick="showPanel('notes')">Notes (Working Feature)</button>
+    <button onclick="showPanel('broken')">Broken Display (Pre-Repair)</button>
+    <button onclick="showPanel('jobs')">Test Jobs (New Feature)</button>
+    <button onclick="showPanel('weather')">Weather (External API)</button>
+    <button onclick="showPanel('runner')">Job Runner (Failure/Replay)</button>
+  </nav>
+
+  <!-- NOTES PANEL -->
+  <section id="panel-notes" class="panel">
+    <h2>Notes — Working Feature</h2>
+    <form id="note-form">
+      <input id="note-title" placeholder="Title" required />
+      <textarea id="note-body" placeholder="Body"></textarea>
+      <button type="submit">Save Note</button>
+    </form>
+    <div id="notes-list"></div>
+  </section>
+
+  <!-- BROKEN DISPLAY PANEL -->
+  <section id="panel-broken" class="panel hidden">
+    <h2>Broken Display Route — Test 02</h2>
+    <p>Fetches note ID 2 via <code>/api/notes/2/display</code>.<br/>
+    Before repair: <code>display_body</code> is <strong>null</strong> for notes with empty body.<br/>
+    After repair: <code>display_body</code> is <strong>empty string</strong>.</p>
+    <button onclick="testBrokenDisplay()">Test /display endpoint</button>
+    <pre id="broken-output"></pre>
+  </section>
+
+  <!-- TEST JOBS PANEL -->
+  <section id="panel-jobs" class="panel hidden">
+    <h2>Software Test Jobs — New Feature</h2>
+    <form id="job-form">
+      <input id="job-title" placeholder="Job title" required />
+      <select id="job-status">
+        <option value="OPEN">OPEN</option>
+        <option value="RUNNING">RUNNING</option>
+        <option value="COMPLETE">COMPLETE</option>
+        <option value="FAILED">FAILED</option>
+      </select>
+      <textarea id="job-notes" placeholder="Notes (optional)"></textarea>
+      <button type="submit">Create Job</button>
+    </form>
+    <div id="jobs-list"></div>
+  </section>
+
+  <!-- WEATHER PANEL -->
+  <section id="panel-weather" class="panel hidden">
+    <h2>Weather — External API (Provider A: Open-Meteo)</h2>
+    <p>No API key required. Provider abstraction enabled.</p>
+    <button onclick="loadWeather()">Fetch Current Weather</button>
+    <div id="weather-output"></div>
+    <div id="provider-info"></div>
+  </section>
+
+  <!-- JOB RUNNER PANEL -->
+  <section id="panel-runner" class="panel hidden">
+    <h2>Job Runner — Failure / Replay (Test 8)</h2>
+    <p>Start a job with <strong>Force Fail Stage C</strong> to simulate a failure. Then replay from Stage C only.</p>
+    <form id="runner-form">
+      <input id="runner-title" placeholder="Job title" required />
+      <label><input type="checkbox" id="force-fail" /> Force Fail Stage C</label>
+      <button type="submit">Start Job</button>
+    </form>
+    <div id="runner-output"></div>
+    <div id="runner-jobs-list"></div>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
