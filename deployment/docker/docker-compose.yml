@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_PATH: /app/data/fme_test.db
+      WEATHER_PROVIDER: open-meteo
+      WEATHER_LAT: "49.2827"
+      WEATHER_LON: "-123.1207"
+      WEATHER_LOCATION_NAME: Vancouver
+      # INTEGRATION_PENDING: add OPENWEATHERMAP_API_KEY to a .env file
+      # and reference it here as: OPENWEATHERMAP_API_KEY: ${OPENWEATHERMAP_API_KEY}
+    volumes:
+      - fme_data:/app/data
+    restart: on-failure
+
+volumes:
+  fme_data:
+    driver: local

@@ -1,0 +1,2 @@
+# Heroku / Railway / Render / any Procfile-compatible platform
+web: node src/server.js

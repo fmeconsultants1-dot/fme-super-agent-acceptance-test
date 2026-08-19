@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: fme-acceptance-test
+    env: node
+    buildCommand: npm install
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DB_PATH
+        value: ./data/fme_test.db
+      - key: WEATHER_PROVIDER
+        value: open-meteo
+      - key: WEATHER_LAT
+        value: "49.2827"
+      - key: WEATHER_LON
+        value: "-123.1207"
+      - key: WEATHER_LOCATION_NAME
+        value: Vancouver
+      # INTEGRATION_PENDING: set OPENWEATHERMAP_API_KEY in Render dashboard
+      - key: OPENWEATHERMAP_API_KEY
+        sync: false
