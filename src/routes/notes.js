@@ -1,10 +1,10 @@
 /**
  * /api/notes — Working feature: CRUD for notes.
  *
- * KNOWN BUG (intentional, Test 02 target):
- * GET /api/notes/:id/display returns body as undefined when body is empty string
- * because the route uses  `note.body || undefined`  instead of  `note.body ?? ''`
- * This is the deliberately broken feature. All other note routes work correctly.
+ * TEST-02 FIX APPLIED (2026-08-19):
+ * GET /api/notes/:id/display previously used `note.body || undefined`
+ * which coerced empty string to null in JSON. Fixed to `note.body ?? ''`.
+ * Regression test: tests/notes.test.js — TEST-02 block.
  */
 'use strict';
 const express = require('express');
@@ -63,24 +63,21 @@ router.delete('/:id', (req, res) => {
 });
 
 // -------------------------------------------------------------------------
-// INTENTIONALLY BROKEN FEATURE — Test 02
-// GET /api/notes/:id/display
-// Bug: uses  `note.body || undefined`  — falsy check discards empty string.
-// Effect: notes with empty body return { display_body: undefined } in JSON
-//         which serialises to null, confusing the frontend.
-// Fix (applied in Test 02): change to  `note.body ?? ''`
+// GET /api/notes/:id/display  (REPAIRED — TEST-02)
+// BEFORE FIX: note.body || undefined  → empty string became null in JSON
+// AFTER FIX:  note.body ?? ''         → empty string preserved correctly
 // -------------------------------------------------------------------------
 router.get('/:id/display', (req, res) => {
   const note = db.prepare('SELECT * FROM notes WHERE id = ?').get(req.params.id);
   if (!note) return res.status(404).json({ error: 'Note not found' });
 
-  // BUG: || coerces empty string to falsy → display_body becomes undefined → null in JSON
-  const display_body = note.body || undefined; // <-- intentional bug
+  // FIX: ?? preserves empty string; || would discard it
+  const display_body = note.body ?? '';
 
   res.json({
     id:           note.id,
     title:        note.title,
-    display_body,           // null when body is '' — wrong
+    display_body,           // '' when body is '' — correct after fix
     created_at:   note.created_at
   });
 });
